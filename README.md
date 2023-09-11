@@ -39,3 +39,11 @@ Setelah *package* terinstall, saya membuat *project* Django bernama `blockbuster
 ```
 django-admin startproject blockbuster .
 ```
+### 3. Konfigurasi Proyek untuk *Deployment*
+Setelah *project* dibuat, saya melakukan konfigurasi untuk *deployment* dengan cara menambahkan `*` pada `ALLOWED_HOSTS` pada berkas `blockbuster/settings.py` agar dapat diakses dari luar. Berikut isi dari berkas `blockbuster/settings.py`:
+```
+...
+ALLOWED_HOSTS = ['*']
+...
+```
+
