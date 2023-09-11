@@ -130,3 +130,14 @@ urlpatterns = [
     path('', views.index, name='index'),
 ]
 ```
+### 9. Mengonfigurasi *url* pada *project*
+Setelah *url* dibuat, saya melakukan konfigurasi pada `urlpatterns` pada berkas `blockbuster/urls.py` dengan menambahkan *url* dari *app* `main`. Sebelum itu, saya mengimpor `include` dari `django.urls`. Berikut isi dari berkas `blockbuster/urls.py`:
+```
+...
+from django.urls import path, include
+
+urlpatterns = [
+    ...,
+    path('', include('main.urls')),
+]
+```
