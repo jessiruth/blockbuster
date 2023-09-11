@@ -46,4 +46,17 @@ Setelah *project* dibuat, saya melakukan konfigurasi untuk *deployment* dengan c
 ALLOWED_HOSTS = ['*']
 ...
 ```
-
+### 4. Membuat *app* `main`
+Setelah konfigurasi selesai, saya membuat *app* `main` menggunakan perintah berikut:
+```
+python manage.py startapp main
+```
+Setelah *app* dibuat, saya melakukan konfigurasi pada `INSTALLED_APPS` pada berkas `blockbuster/settings.py` dengan menambahkan `main`. Berikut isi dari berkas `blockbuster/settings.py`:
+```
+...
+INSTALLED_APPS = [
+    ...,
+    "main",
+]
+...
+```
