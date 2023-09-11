@@ -118,3 +118,15 @@ Setelah *view* dibuat, saya melakukan modifikasi pada *template* `index.html` de
 <h4> Class: </h4>
 <p> {{ class }} </p>
 ```
+### 8. Membuat *url* `index`
+Setelah *view* dibuat, saya membuat *url* `index` pada berkas `main/urls.py`. Sebelum itu, saya mengimpor *views* yang telah dibuat dan membuat `app_name` untuk *app* `main`. Berikut isi dari berkas `main/urls.py`:
+```
+from django.urls import path
+from . import views
+
+app_name = 'main'
+
+urlpatterns = [
+    path('', views.index, name='index'),
+]
+```
