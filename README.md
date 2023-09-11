@@ -94,3 +94,27 @@ Setelah migrasi selesai, saya membuat *template* `index.html` pada berkas `main/
 <h4> Class: </h4>
 <p> PBP C </p>
 ```
+### 7. Membuat *view* `index`
+Setelah *template* dibuat, saya membuat *view* `index` pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+def index(request):
+    context = {
+        "name": "Jessica Ruth Damai Yanti Manurung",
+        "npm": "2206082783",
+        "class": "PBP C",
+    }
+    return render(request, 'index.html', context)
+```
+Setelah *view* dibuat, saya melakukan modifikasi pada *template* `index.html` dengan menambahkan *context* yang telah dibuat. Berikut isi dari berkas `main/templates/index.html`:
+```
+<h1> Blockbuster </h1>
+<h2> A simple movie database </h2>
+
+<h4> Name: </h4>
+<p> {{ name }} </p>
+<h4> NPM: </h4>
+<p> {{ npm }} </p>
+<h4> Class: </h4>
+<p> {{ class }} </p>
+```
