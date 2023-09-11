@@ -81,3 +81,16 @@ Setelah *model* dibuat, saya melakukan migrasi menggunakan perintah berikut:
 python manage.py makemigrations
 python manage.py migrate
 ```
+### 6. Membuat *template* `index.html`
+Setelah migrasi selesai, saya membuat *template* `index.html` pada berkas `main/templates/index.html`. Berikut isi dari berkas `main/templates/index.html`:
+```
+<h1> Blockbuster </h1>
+<h2> A simple movie database </h2>
+
+<h4> Name: </h4>
+<p> Jessica Ruth Damai Yanti Manurung </p>
+<h4> NPM: </h4>
+<p> 2206082783 </p>
+<h4> Class: </h4>
+<p> PBP C </p>
+```
