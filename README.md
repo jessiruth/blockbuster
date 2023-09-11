@@ -30,6 +30,7 @@ whitenoise
 psycopg2-binary
 requests
 urllib3
+Pillow
 ```
 Setelah itu, saya menginstall *package* yang dibutuhkan menggunakan perintah berikut:
 ```
@@ -59,4 +60,24 @@ INSTALLED_APPS = [
     "main",
 ]
 ...
+```
+### 5. Membuat *model* `Item`
+Setelah *app* dibuat, saya membuat *model* `Item` pada berkas `main/models.py`. Berikut isi dari berkas `main/models.py`:
+```
+...
+class Item(models.Model):
+    name = models.CharField(max_length=255)
+    amount = models.IntegerField()
+    description = models.TextField()
+    price = models.FloatField()
+    year = models.IntegerField()
+    genre = models.CharField(max_length=255)
+    duration = models.IntegerField()
+    rating = models.FloatField()
+    image = models.ImageField(upload_to='images/')
+```
+Setelah *model* dibuat, saya melakukan migrasi menggunakan perintah berikut:
+```
+python manage.py makemigrations
+python manage.py migrate
 ```
