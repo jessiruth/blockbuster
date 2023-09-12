@@ -208,3 +208,20 @@ OK
 Destroying test database for alias 'default'...
 ```
 
+### 11. Melakukan *Deployment* ke Adaptable
+Setelah unit *test* selesai, saya melakukan *deployment* ke Adaptable dengan langkah-langkah sebagai berikut:
+1. *Login* ke [Adaptable](https://adaptable.io/)
+2. Klik *New App* dan pilih *Connect an Existing Repository*
+3. Pilih `jessiruth/blockbuster` sebagai *repository* dan pilih *branch* `main`
+4. Pilih *Python App Template* sebagai *template*
+5. Pilih *PostgreSQL* sebagai *database*
+6. Pilih *Python 3.10* sebagai *Python Version*
+7. Ketik `python manage.py migrate && gunicorn blockbuster.wsgi` pada *Start Command* dan klik *Next*
+8. Ketik `jess-blockbuster` pada *App Name* dan klik *Next*
+9. Centang *HTTP Listener on PORT*, lalu klik *DEPLOY APP*
+10. Tunggu hingga *deployment* selesai
+11. Klik *VISIT APP* untuk melihat hasil *deployment*
+
+Berikut adalah hasil *deployment* yang telah dilakukan:
+[![image](https://i.postimg.cc/1tLjZwcT/deployment.png)](https://jess-blockbuster.adaptable.app/)
+Website dapat diakses melalui [https://jess-blockbuster.adaptable.app/](https://jess-blockbuster.adaptable.app/)
