@@ -40,6 +40,7 @@ Setelah *package* terinstall, saya membuat *project* Django bernama `blockbuster
 ```
 django-admin startproject blockbuster .
 ```
+
 ### 3. Konfigurasi Proyek untuk *Deployment*
 Setelah *project* dibuat, saya melakukan konfigurasi untuk *deployment* dengan cara menambahkan `*` pada `ALLOWED_HOSTS` pada berkas `blockbuster/settings.py` agar dapat diakses dari luar. Berikut isi dari berkas `blockbuster/settings.py`:
 ```
@@ -47,6 +48,7 @@ Setelah *project* dibuat, saya melakukan konfigurasi untuk *deployment* dengan c
 ALLOWED_HOSTS = ['*']
 ...
 ```
+
 ### 4. Membuat *app* `main`
 Setelah konfigurasi selesai, saya membuat *app* `main` menggunakan perintah berikut:
 ```
@@ -61,6 +63,7 @@ INSTALLED_APPS = [
 ]
 ...
 ```
+
 ### 5. Membuat *model* `Item`
 Setelah *app* dibuat, saya membuat *model* `Item` pada berkas `main/models.py`. Berikut isi dari berkas `main/models.py`:
 ```
@@ -81,6 +84,7 @@ Setelah *model* dibuat, saya melakukan migrasi menggunakan perintah berikut:
 python manage.py makemigrations
 python manage.py migrate
 ```
+
 ### 6. Membuat *template* `index.html`
 Setelah migrasi selesai, saya membuat *template* `index.html` pada berkas `main/templates/index.html`. Berikut isi dari berkas `main/templates/index.html`:
 ```
@@ -94,6 +98,7 @@ Setelah migrasi selesai, saya membuat *template* `index.html` pada berkas `main/
 <h4> Class: </h4>
 <p> PBP C </p>
 ```
+
 ### 7. Membuat *view* `index`
 Setelah *template* dibuat, saya membuat *view* `index` pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
 ```
@@ -118,6 +123,7 @@ Setelah *view* dibuat, saya melakukan modifikasi pada *template* `index.html` de
 <h4> Class: </h4>
 <p> {{ class }} </p>
 ```
+
 ### 8. Membuat *url* `index`
 Setelah *view* dibuat, saya membuat *url* `index` pada berkas `main/urls.py`. Sebelum itu, saya mengimpor *views* yang telah dibuat dan membuat `app_name` untuk *app* `main`. Berikut isi dari berkas `main/urls.py`:
 ```
@@ -130,6 +136,7 @@ urlpatterns = [
     path('', views.index, name='index'),
 ]
 ```
+
 ### 9. Mengonfigurasi *url* pada *project*
 Setelah *url* dibuat, saya melakukan konfigurasi pada `urlpatterns` pada berkas `blockbuster/urls.py` dengan menambahkan *url* dari *app* `main`. Sebelum itu, saya mengimpor `include` dari `django.urls`. Berikut isi dari berkas `blockbuster/urls.py`:
 ```
@@ -141,3 +148,63 @@ urlpatterns = [
     path('', include('main.urls')),
 ]
 ```
+### 10. Membuat Unit *Test*
+Setelah konfigurasi selesai, saya membuat unit *test* pada berkas `main/tests.py`. Berikut isi dari berkas `main/tests.py`:
+```
+from django.test import TestCase, Client
+from .models import Item
+
+# Create your tests here.
+class MainTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        Item.objects.create(
+            name='Ponyo on the Cliff by the Sea',
+            amount=10,
+            description='Ponyo on the Cliff by the Sea is a 2008 Japanese animated fantasy film written and directed by Hayao Miyazaki, animated by Studio Ghibli for the Nippon Television Network, Dentsu, Hakuhodo DY Media Partners, Buena Vista Home Entertainment, Mitsubishi, and distributed by Toho.',
+            price=30000,
+            year=2008,
+            genre='Fantasy, Adventure, Family',
+            duration=101,
+            rating=7.7,
+            image='images/Ponyo_(2008).png',
+        )
+        
+    def test_index(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'index.html')
+        self.assertContains(response, 'Jessica Ruth Damai Yanti Manurung')
+        self.assertContains(response, '2206082783')
+        self.assertContains(response, 'PBP C')
+        
+    def test_item(self):
+        ponyo = Item.objects.get(name='Ponyo on the Cliff by the Sea')
+        self.assertEqual(ponyo.name, 'Ponyo on the Cliff by the Sea')
+        self.assertEqual(ponyo.amount, 10)
+        self.assertEqual(ponyo.description, 'Ponyo on the Cliff by the Sea is a 2008 Japanese animated fantasy film written and directed by Hayao Miyazaki, animated by Studio Ghibli for the Nippon Television Network, Dentsu, Hakuhodo DY Media Partners, Buena Vista Home Entertainment, Mitsubishi, and distributed by Toho.')
+        self.assertEqual(ponyo.price, 30000)
+        self.assertEqual(ponyo.year, 2008)
+        self.assertEqual(ponyo.genre, 'Fantasy, Adventure, Family')
+        self.assertEqual(ponyo.duration, 101)
+        self.assertEqual(ponyo.rating, 7.7)
+        self.assertEqual(ponyo.image, 'images/Ponyo_(2008).png')
+        
+```
+Setelah unit *test* dibuat, saya menjalankan unit *test* menggunakan perintah berikut:
+```
+python manage.py test
+```
+Hasil dari unit *test* adalah sebagai berikut:
+```
+Found 2 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.038s
+
+OK
+Destroying test database for alias 'default'...
+```
+
