@@ -4,7 +4,7 @@ Blockbuster merupakan aplikasi yang digunakan untuk memanajemen data film. Aplik
 
 ## Author
 - Nama: Jessica Ruth Damai Yanti Manurung
-- NPM: 2206031302
+- NPM: 2206082783
 - Kelas: Pemrograman Berbasis Platform C
 
 # Tugas 2: Implementasi Model-View-Template (MVT) pada Django
