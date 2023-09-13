@@ -225,3 +225,20 @@ Setelah unit *test* selesai, saya melakukan *deployment* ke Adaptable dengan lan
 Berikut adalah hasil *deployment* yang telah dilakukan:
 [![image](https://i.postimg.cc/1tLjZwcT/deployment.png)](https://jess-blockbuster.adaptable.app/)
 Website dapat diakses melalui [https://jess-blockbuster.adaptable.app/](https://jess-blockbuster.adaptable.app/)
+
+## Menjawab Pertanyaan-Pertanyaan
+### 1. Buatlah bagan yang berisi *request client* ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara `urls.py`, `views.py`, `models.py`, dan berkas `html`.
+[![Mekanisme-Django-Framework.jpg](https://i.postimg.cc/X7d4V61X/Mekanisme-Django-Framework.jpg)](https://postimg.cc/xcfWRh2S)
+
+### 2. Jelaskan mengapa kita menggunakan ***virtual environment***? Apakah kita tetap dapat membuat aplikasi web berbasis Django tanpa menggunakan ***virtual environment***?
+*Virtual environment* digunakan untuk membuat *environment* yang terisolasi sehingga *package* yang digunakan untuk membuat aplikasi tidak akan berbenturan dengan *package* yang digunakan untuk aplikasi lain. Dengan menggunakan *virtual environment*, kita dapat mengatur *package* yang digunakan untuk setiap aplikasi yang kita buat. Selain itu, kita juga dapat mengatur versi dari *package* yang digunakan untuk setiap aplikasi yang kita buat. Oleh karena itu, kita menggunakan *virtual environment* untuk membuat aplikasi web berbasis Django.
+
+Sebenarnya, kita tetap dapat membuat aplikasi web berbasis Django tanpa menggunakan *virtual environment*, namun *package* yang digunakan akan terinstall secara global sehingga dapat berpotensi terjadi *package* yang berbenturan dan tidak dapat mengatur versi dari *package* yang digunakan karena *package* yang digunakan akan terinstall secara global.
+
+### 3. Jelaskan apakah itu MVC, MVT, MVVM dan perbedaan dari ketiganya.
+MVC, MVT, dan MVVM merupakan arsitektur yang digunakan untuk membangun aplikasi. Perbedaan dari ketiganya adalah sebagai berikut:
+- MVC (Model-View-Controller) merupakan arsitektur yang memisahkan aplikasi menjadi 3 bagian, yaitu *model*, *view*, dan *controller*. *Model* berfungsi untuk mengatur data, *view* berfungsi untuk mengatur tampilan, dan *controller* berfungsi untuk mengatur logika. *Controller* berfungsi sebagai penghubung antara *model* dan *view*. *Model* dan *view* tidak saling berhubungan.
+- MVT (Model-View-Template) merupakan arsitektur yang memisahkan aplikasi menjadi 3 bagian, yaitu *model*, *view*, dan *template*. *Model* berfungsi untuk mengatur data, *view* berfungsi untuk mengatur logika, dan *template* berfungsi untuk mengatur tampilan. *View* berfungsi sebagai penghubung antara *model* dan *template*. *Model* dan *template* tidak saling berhubungan.
+- MVVM (Model-View-ViewModel) merupakan arsitektur yang memisahkan aplikasi menjadi 3 bagian, yaitu *model*, *view*, dan *view model*. *Model* berfungsi untuk mengatur data, *view* berfungsi untuk mengatur tampilan, dan *view model* berfungsi untuk mengatur logika. *View model* berfungsi sebagai penghubung antara *model* dan *view*. *Model* dan *view* tidak saling berhubungan.
+
+Secara umum, perbedaan dari ketiganya adalah pada *controller* dan *view model*. *Controller* pada MVC berfungsi untuk mengatur logika, sedangkan *view model* pada MVVM berfungsi untuk mengatur logika. *Controller* pada MVC berfungsi sebagai penghubung antara *model* dan *view*, sedangkan *view model* pada MVVM berfungsi sebagai penghubung antara *model* dan *view*. *Controller* pada MVC dan *view model* pada MVVM tidak saling berhubungan. Pada MVT, tidak terdapat *controller* maupun *view model*.
