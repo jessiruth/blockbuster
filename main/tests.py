@@ -35,5 +35,6 @@ class MainTestCase(TestCase):
         self.assertEqual(ponyo.genre, 'Fantasy, Adventure, Family')
         self.assertEqual(ponyo.duration, 101)
         self.assertEqual(ponyo.rating, 7.7)
-        self.assertEqual(ponyo.image, 'images/Ponyo_(2008).png')
+        self.assertEqual(ponyo.image.url, '/media/images/Ponyo_(2008).png')
+        ponyo.image.delete()
         

@@ -1,0 +1,17 @@
+
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Blockbuster</title>
+{% endblock meta %}
+
+{% block content %}
+    <h1> Blockbuster </h1>
+    <h2> Add new movie </h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock content %}
