@@ -549,3 +549,410 @@ JSON sering digunakan dalam pertukaran data antara aplikasi web modern karena me
 5. Mendukung Pemrosesan Data Secara Efisien: JSON memiliki dukungan yang baik untuk pemrosesan data. Banyak bahasa pemrograman memiliki library atau modul JSON built-in atau pihak ketiga yang memungkinkan pengolahan data JSON dengan mudah. Misalnya, di Java, kita dapat menggunakan library Jackson atau Gson untuk membaca dan menulis data JSON.
 
 Dalam kesimpulannya, JSON sering digunakan dalam pertukaran data antara aplikasi web modern karena kemampuannya yang ringan, mudah dibaca, dan kompatibel dengan banyak bahasa pemrograman. JSON juga mendukung struktur data terkelompok dan bersarang, serta memiliki dukungan yang baik untuk pemrosesan data. Semua ini menjadikan JSON sebagai format yang populer dan efisien untuk pertukaran data antara aplikasi web modern.
+
+
+# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+
+## *Step-by-step* Implementasi Autentikasi, Session, dan Cookies
+
+### 0. Menambahkan pesan total item pada *template*
+Sebelum memulai, saya menambahkan pesan total item pada *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan di atas tag `<table>`:
+```
+{% if items %}
+    <p>Total Item: {{ items|length }}</p>
+{% endif %}
+```
+
+### 1. Membuat fungsi dan form untuk registrasi
+Selanjutnya, saya membuat fungsi dan form untuk registrasi pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+...
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            return redirect('main:login')
+    context = {
+        'form': UserCreationForm(),
+    }
+    return render(request, 'register.html', context)
+```
+Setelah itu, saya membuat *template* `register.html` pada berkas `main/templates/register.html`. Berikut isi dari berkas `main/templates/register.html`:
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Blockbuster</title>
+{% endblock meta %}
+
+{% block content %}
+    <h1> Blockbuster </h1>
+    <h2> A simple movie database </h2>
+
+    <h4> Register </h4>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <button type="submit">Register</button>
+    </form>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}
+```
+Setelah itu, saya membuat *url* `register` pada berkas `main/urls.py`. Berikut isi dari berkas `main/urls.py`:
+```
+...
+urlpatterns = [
+    ...,
+    path('register/', views.register, name='register'),
+]
+```
+
+### 2. Membuat fungsi dan form untuk login
+Selanjutnya, saya membuat fungsi dan form untuk login pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import login
+...
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Welcome {username}!')
+            return redirect('main:index')
+    context = {
+        'form': AuthenticationForm(),
+    }
+    return render(request, 'login.html', context)
+```
+Setelah itu, saya membuat *template* `login.html` pada berkas `main/templates/login.html`. Berikut isi dari berkas `main/templates/login.html`:
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Blockbuster</title>
+{% endblock meta %}
+
+{% block content %}
+    <h1> Blockbuster </h1>
+    <h2> A simple movie database </h2>
+
+    <h4> Login </h4>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <button type="submit">Login</button>
+    </form>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}
+```
+Setelah itu, saya membuat *url* `login` pada berkas `main/urls.py`. Berikut isi dari berkas `main/urls.py`:
+```
+...
+urlpatterns = [
+    ...,
+    path('login/', views.login_user, name='login'),
+]
+```
+
+### 3. Membuat fungsi untuk logout
+Selanjutnya, saya membuat fungsi untuk logout pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+from django.contrib.auth import login, logout
+...
+def logout_user(request):
+    logout(request)
+    return redirect('main:index')
+```
+Setelah itu, saya membuat *url* `logout` pada berkas `main/urls.py`. Berikut isi dari berkas `main/urls.py`:
+```
+...
+urlpatterns = [
+    ...,
+    path('logout/', views.logout_user, name='logout'),
+]
+```
+
+### 4. Menambahkan *url* `register`, `login`, dan `logout` pada *template*
+Selanjutnya, saya menambahkan *url* untuk `register`, `login`, dan `logout` pada *template* `index.html` pada berkas `main/templates/index.html`. Saya juga mengubah *url* `create` menjadi `create_item`. Berikut kode yang saya tambahkan di bawah *table*:
+```
+{% if user.is_authenticated %}
+    <a href="{% url 'main:create' %}">Create Item</a>
+    <a href="{% url 'main:logout' %}">Logout</a>
+{% else %}
+    <a href="{% url 'main:register' %}">Register</a>
+    <a href="{% url 'main:login' %}">Login</a>
+{% endif %}
+```
+
+### 5. Merestrict *view* `create_item` agar hanya dapat diakses oleh pengguna yang sudah *login*
+Selanjutnya, saya merestrict *view* `create_item` agar hanya dapat diakses oleh pengguna yang sudah *login* pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+from django.contrib.auth.decorators import login_required
+...
+@login_required(login_url='main:login')
+def create_item(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('main:index')
+    else:
+        form = ItemForm()
+    return render(request, 'form.html', {'form': form})
+```
+Selain itu, saya mengubah *forms* pada berkas `main/forms.py` menjadi sebagai berikut:
+```
+from django.forms import ModelForm
+from main.models import Item
+
+class ItemForm(ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'amount', 'description', 'price', 'year', 'genre', 'duration', 'rating', 'image']
+```
+
+### 6. Menghilangkan *table* *item* pada *template* `index.html` jika pengguna belum *login*
+Selanjutnya, saya menghilangkan *table* pada *template* `index.html` jika pengguna belum *login* pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan:
+```
+    {% if user.is_authenticated %}
+    <table>
+        ...
+    </table>
+    {% endif %}
+```
+
+### 7. Menghubungkan model `Item` dengan model `User`
+Selanjutnya, saya menghubungkan model `Item` dengan model `User` pada berkas `main/models.py`. Berikut isi dari berkas `main/models.py`:
+```
+...
+from django.contrib.auth.models import User
+...
+class Item(models.Model):
+    ...
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+> **Catatan:** *Database* perlu di-*migrate* setelah mengubah model. Jika terjadi *error* saat *migrate*, hapus *database* dan *migrate* ulang.
+
+Selain itu, saya mengubah *view* `create_item` pada berkas `main/views.py` menjadi sebagai berikut:
+```
+...
+@login_required(login_url='main:login')
+def create_item(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.user = request.user
+            item.save()
+            return redirect('main:index')
+    else:
+        form = ItemForm()
+    return render(request, 'form.html', {'form': form})
+```
+
+### 8. Menampilkan informasi pengguna pada *template* `index.html`
+Selanjutnya, saya menampilkan informasi pengguna pada *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan di atas *table*:
+```
+{% if user.is_authenticated %}
+    <p>Username: {{ user.username }}</p>
+{% endif %}
+```
+Selain itu, saya menghapus nama, NPM, dan kelas pada *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya hapus:
+```
+<h4> Name: </h4>
+<p> {{ name }} </p>
+<h4> NPM: </h4>
+<p> {{ npm }} </p>
+<h4> Class: </h4>
+<p> {{ class }} </p>
+```
+Saya juga mengubah *view* `index` pada berkas `main/views.py` menjadi sebagai berikut:
+```
+...
+def index(request):
+    if request.user.is_authenticated:
+        items = Item.objects.filter(user=request.user)
+    else:
+        items = []
+    context = {
+        "items": items,
+    }
+    return render(request, 'index.html', context)
+```
+
+### 9. Menerapkan *cookies* pada proyek
+Selanjutnya, saya menerapkan *cookies* pada proyek dengan menambahkan *cookies* pada *view* `login_user` pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+from datetime import datetime
+...
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Welcome {username}!')
+            response = redirect('main:index')
+            response.set_cookie('last_login', str(datetime.now()))
+            return response
+    context = {
+        'form': AuthenticationForm(),
+    }
+    return render(request, 'login.html', context)
+```
+Selain itu, saya menambahkan *cookies* pada *view* `logout_user` pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+def logout_user(request):
+    logout(request)
+    response = redirect('main:index')
+    response.delete_cookie('last_login')
+    return response
+```
+Selain itu, saya menambahkan *cookies* pada *view* `index` pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+def index(request):
+    if request.user.is_authenticated:
+        items = Item.objects.filter(user=request.user)
+    else:
+        items = []
+    context = {
+        "items": items,
+    }
+    response = render(request, 'index.html', context)
+    if request.COOKIES.get('last_login'):
+        response.set_cookie('last_login', request.COOKIES.get('last_login'))
+    return response
+```
+Selanjutnya, saya menampilkan *cookies* pada *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan di atas *table*:
+```
+{% if request.COOKIES.last_login %}
+    <p>Last Login: {{ request.COOKIES.last_login }}</p>
+{% endif %}
+```
+
+### 10. Menambahkan *button* untuk menambahkan dan mengurangi *amount* dan menghapus *item*
+Selanjutnya, saya membuat fungsi untuk menambahkan dan mengurangi *amount* dan menghapus *item* pada berkas `main/views.py`. Berikut isi dari berkas `main/views.py`:
+```
+...
+@login_required(login_url='main:login')
+def add_amount(request, id):
+    item = Item.objects.get(id=id)
+    if request.user == item.user:
+        item.amount += 1
+        item.save()
+    return redirect('main:index')
+
+@login_required(login_url='main:login')
+def reduce_amount(request, id):
+    item = Item.objects.get(id=id)
+    if request.user == item.user:
+        if item.amount > 0:
+            item.amount -= 1
+            item.save()
+        else:
+            item.delete()
+    return redirect('main:index')
+
+@login_required(login_url='main:login')
+def delete_item(request, id):
+    item = Item.objects.get(id=id)
+    if request.user == item.user:
+        item.delete()
+    return redirect('main:index')
+```
+Selain itu, saya menambahkan *url* `add_amount`, `reduce_amount`, dan `delete_item` pada berkas `main/urls.py`. Berikut isi dari berkas `main/urls.py`:
+```
+...
+urlpatterns = [
+    ...,
+    path('item/add/<int:id>/', views.add_amount, name='add_amount'),
+    path('item/reduce/<int:id>/', views.reduce_amount, name='reduce_amount'),
+    path('item/delete/<int:id>/', views.delete_item, name='delete_item'),
+]
+```
+Selanjutnya, saya menambahkan *button* untuk menambahkan dan mengurangi *amount* dan menghapus *item* pada *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan di bawah *table*:
+```
+{% if user.is_authenticated %}
+    <table>
+        ...
+        <tr>
+            ...
+            <th>Actions</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            ...
+            <td>
+                <a href="{% url 'main:add_amount' item.id %}">Add</a>
+                <a href="{% url 'main:reduce_amount' item.id %}">Reduce</a>
+                <a href="{% url 'main:delete_item' item.id %}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+```
+
+### Membuat dua akun pengguna dengan masing-masing tiga dummy data
+Selanjutnya, saya membuat dua akun pengguna dengan masing-masing tiga dummy data. Berikut adalah hasilnya:
+[![akun1](https://i.postimg.cc/dQbkNVCY/andi.png)](https://i.postimg.cc/dQbkNVCY/andi.png)
+[![akun2](https://i.postimg.cc/8zH7Cd0p/budi.png)](https://i.postimg.cc/8zH7Cd0p/budi.png)
+
+
+## Menjawab Pertanyaan-Pertanyaan
+### Apa itu Django `UserCreationForm`, dan jelaskan apa kelebihan dan kekurangannya?
+Django `UserCreationForm` adalah formulir bawaan yang disediakan oleh Django untuk mempermudah proses pembuatan *user* baru dalam aplikasi web yang menggunakan Django. *Class* ini termasuk dalam modul `django.contrib.auth.forms` dan digunakan untuk mengumpulkan data yang diperlukan untuk membuat akun pengguna.
+Kelebihan dari Django `UserCreationForm` adalah sebagai berikut:
+- Mudah digunakan: Bagi seorang developer aplikasi yang menggunakan Django, `UserCreationForm` sangat mempermudah developer dalam pembuatan alur register yang cepat dan mudah sehingga mempercepat proses pembuatan aplikasi.
+- Terintegrasi dengan sistem keamanan Django: Password yang disimpan dari formulir ini akan di hash oleh django sehingga penyimpanan password dapat menjadi lebih aman.
+- Memiliki syarat validasi password: Password pada formulir ini memiliki minimum jumlah kata dengan syarat beberapa karakter penting untuk harus tercantum pada password sehingga menjadi lebih kuat.
+
+Namun, Django UserCreationForm juga memiliki beberapa kekurangan:
+- Hanya memiliki formulir standar: UserCreationForum hanya menerima input username, email dan password. Apabila memerlukan input lain maka formulir perlu dicustom terlebih dahulu.
+- Tidak terverifikasi email: Formulir ini hanya digunakan untuk menerima input sebagai pembuatan user dalam aplikasi, akan tetapi jika diperlukan langkah lebih lanjut seperti verifikasi email maka perogram perlu dikustomisasi lebih lanjut.
+
+### Apa perbedaan antara autentikasi dan otorisasi dalam konteks Django, dan mengapa keduanya penting?
+Autentikasi adalah proses memverifikasi identitas pengguna. Dalam konteks aplikasi web, autentikasi biasanya melibatkan pengguna memasukkan kredensial seperti nama pengguna dan kata sandi, yang kemudian sistem verifikasi apakah kredensial tersebut sesuai dengan yang ada dalam basis data. Jika cocok, pengguna dianggap terotentikasi dan dapat mengakses sumber daya yang terlindungi oleh aplikasi web.
+
+Otorisasi, di sisi lain, adalah proses memberikan atau menolak akses ke sumber daya tertentu kepada pengguna yang sudah terotentikasi. Otorisasi menentukan apa yang diizinkan atau tidak diizinkan untuk dilakukan oleh pengguna yang terotentikasi. Otorisasi mengontrol hak akses pengguna.
+
+Autentikasi dan otorisasi sangat penting dalam Django dan aplikasi web pada umumnya. Autentikasi memastikan bahwa hanya pengguna yang sah yang dapat mengakses aplikasi, sedangkan otorisasi memastikan bahwa pengguna hanya dapat melakukan tindakan yang sesuai dengan izin mereka. Kedua proses ini bekerja bersama-sama untuk menjaga keamanan aplikasi web. Autentikasi memastikan bahwa hanya pengguna yang sah yang dapat mengakses aplikasi, sedangkan otorisasi memastikan bahwa pengguna hanya dapat melakukan tindakan yang sesuai dengan izin mereka
+
+### Apa itu cookies dalam konteks aplikasi web, dan bagaimana Django menggunakan cookies untuk mengelola data *session* pengguna?
+Dalam konteks aplikasi web, cookies adalah sejenis data kecil yang disimpan di browser pengguna oleh server web. Tujuan utamanya adalah untuk menyimpan informasi tentang pengguna dan membantu dalam melacak dan mengidentifikasi pengguna ketika mereka kembali ke situs web.
+
+Django menggunakan cookies dalam konteks *session* pengguna. *session* adalah mekanisme yang digunakan oleh Django dan sebagian besar internet untuk melacak "keadaan" antara situs dan browser tertentu. *session* memungkinkan Anda menyimpan data sembarang per browser, dan data ini tersedia untuk situs setiap kali browser terhubung. Django menggunakan cookie yang berisi id *session* khusus untuk mengidentifikasi setiap browser dan *session*nya dengan situs. Data *session* disimpan dalam basis data situs secara *default*.
+
+### Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai?
+Dalam pengembangan web, penggunaan cookies membantu dalam mempertahankan status pengguna (seperti status login) dan menyimpan preferensi pengguna. Namun, ada beberapa risiko keamanan yang harus diwaspadai ketika menggunakan cookies. Berikut adalah beberapa risiko keamanan yang harus diwaspadai:
+- Eksploitasi cookies: Cookies bisa dieksploitasi untuk melakukan serangan seperti Cross-Site Scripting (XSS) dan Cross-Site Request Forgery (CSRF). Dalam serangan XSS, penyerang bisa mencuri cookies dan menggunakan mereka untuk mengambil alih sesi pengguna. Sementara itu, dalam serangan CSRF, penyerang bisa memanfaatkan cookies untuk melakukan tindakan berbahaya seolah-olah dilakukan oleh pengguna yang sah.
+- Pembocoran data: Cookies sering digunakan untuk menyimpan data pengguna, yang jika tidak ditangani dengan benar, bisa membocorkan data pengguna yang sensitif. Misalnya, jika cookies disimpan dalam transmisi yang tidak aman, mereka bisa dibaca oleh pihak ketiga. Oleh karena itu, penting untuk selalu menggunakan koneksi aman (HTTPS, bukan HTTP) saat mengirim cookies
+- Pelacakan pengguna: Cookies, khususnya cookies pihak ketiga, bisa digunakan untuk melacak aktivitas penggunaan internet pengguna. Ini bisa menjadi masalah privasi, karena informasi tentang kebiasaan browsing pengguna bisa dikumpulkan tanpa sepengetahuan mereka.

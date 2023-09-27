@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Blockbuster</title>
+{% endblock meta %}
+
+{% block content %}
+    <h1> Blockbuster </h1>
+    <h2> A simple movie database </h2>
+
+    <h4> Register </h4>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <button type="submit">Register</button>
+    </form>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}
