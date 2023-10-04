@@ -6,12 +6,91 @@
 {% endblock meta %}
 
 {% block content %}
-    <h1> Blockbuster </h1>
-    <h2> Add new movie </h2>
+    <section class="vh-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="container-fluid mt-5">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="text-center" style="color: #F2BED1;">Blockbuster</h1>
+                        </div>
+                    </div>
+                </div>
+              <div class="card text-white" style="border-radius: 1rem; background-color: #F2BED1;">
+                <div class="card-body p-5 text-center">
+      
+                  <form class="mb-md-5 mt-md-4 pb-5" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+      
+                    <h2 class="fw-bold mb-4 text-uppercase">Add Movie</h2>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="name">Name</label>
+                      <input type="text" name="name" required id="name" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="amount">Amount</label>
+                      <input type="number" name="amount" required id="amount" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="description">Description</label>
+                      <textarea name="description" required id="description" class="form-control form-control-lg" rows="4"></textarea>
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="price">Price</label>
+                      <input type="number" name="price" required id="price" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="year">Year</label>
+                      <input type="number" name="year" required id="year" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="genre">Genre</label>
+                      <input type="text" name="genre" required id="genre" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="duration">Duration</label>
+                      <input type="number" name="duration" required id="duration" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="rating">Rating</label>
+                      <input type="number" name="rating" required id="rating" class="form-control form-control-lg" step="0.1" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="image">Image</label>
+                      <input type="file" name="image" accept="image/*" required id="image" class="form-control form-control-lg" />
+                    </div>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
+                    <button class="btn btn-outline-light btn-lg px-5" type="submit">Add</button>
+      
+                  </form>
+                  {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  <div>
+                    <p class="mb-0">Don't have an account? <a href="{% url "main:register" %}" class="text-white-50 fw-bold">Sign Up</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
 {% endblock content %}

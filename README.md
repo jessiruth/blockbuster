@@ -956,3 +956,402 @@ Dalam pengembangan web, penggunaan cookies membantu dalam mempertahankan status 
 - Eksploitasi cookies: Cookies bisa dieksploitasi untuk melakukan serangan seperti Cross-Site Scripting (XSS) dan Cross-Site Request Forgery (CSRF). Dalam serangan XSS, penyerang bisa mencuri cookies dan menggunakan mereka untuk mengambil alih sesi pengguna. Sementara itu, dalam serangan CSRF, penyerang bisa memanfaatkan cookies untuk melakukan tindakan berbahaya seolah-olah dilakukan oleh pengguna yang sah.
 - Pembocoran data: Cookies sering digunakan untuk menyimpan data pengguna, yang jika tidak ditangani dengan benar, bisa membocorkan data pengguna yang sensitif. Misalnya, jika cookies disimpan dalam transmisi yang tidak aman, mereka bisa dibaca oleh pihak ketiga. Oleh karena itu, penting untuk selalu menggunakan koneksi aman (HTTPS, bukan HTTP) saat mengirim cookies
 - Pelacakan pengguna: Cookies, khususnya cookies pihak ketiga, bisa digunakan untuk melacak aktivitas penggunaan internet pengguna. Ini bisa menjadi masalah privasi, karena informasi tentang kebiasaan browsing pengguna bisa dikumpulkan tanpa sepengetahuan mereka.
+
+
+# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
+
+## *Step-by-step* Desain Web menggunakan HTML, CSS dan Framework CSS
+
+### 1. Menambahkan *stylesheet* Bootstrap pada *template* `base.html`
+Pertama, saya menambahkan *stylesheet* Bootstrap pada *template* `base.html` pada berkas `templates/base.html`. Berikut kode yang saya tambahkan di antara tag `<head>`:
+```
+...
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+J4jsl5c9zdLKaUk5Ae5f5b1bw6AUn5f5v8FZJoMxm6f5cH1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>    
+```
+
+### 2. Mengkostumisasi *template* `base.html`
+Selanjutnya, saya mengkostumisasi *template* `base.html` pada berkas `templates/base.html`. Berikut kode yang saya tambahkan di antara tag `<body>`:
+```
+<body style="background-color: #F8E8EE;">
+    {% block content %}
+    {% endblock content %}
+</body>
+```
+
+### 3. Mengkostumisasi *template* `login.html`
+Selanjutnya, saya mengkostumisasi *template* `login.html` pada berkas `main/templates/login.html`. Berikut kode yang saya tambahkan di *block* `content`:
+```
+    <section class="vh-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="container-fluid mt-5">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="text-center" style="color: #F2BED1;">Blockbuster</h1>
+                        </div>
+                    </div>
+                </div>
+              <div class="card text-white" style="border-radius: 1rem; background-color: #F2BED1;">
+                <div class="card-body p-5 text-center">
+      
+                  <form class="mb-md-5 mt-md-4 pb-5" method="POST">
+                    {% csrf_token %}
+      
+                    <h2 class="fw-bold mb-4 text-uppercase">Login</h2>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="username">Username</label>
+                      <input type="text" name="username" required id="username" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="password">Password</label>
+                      <input type="password" name="password" required id="password" class="form-control form-control-lg" />
+                    </div>
+
+                    <button class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+      
+                  </form>
+                  {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  <div>
+                    <p class="mb-0">Don't have an account? <a href="{% url "main:register" %}" class="text-white-50 fw-bold">Sign Up</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+```
+
+### 4. Mengkostumisasi *template* `register.html`
+Selanjutnya, saya mengkostumisasi *template* `register.html` pada berkas `main/templates/register.html`. Berikut kode yang saya tambahkan di *block* `content`:
+```
+<section class="vh-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="container-fluid mt-5">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="text-center" style="color: #F2BED1;">Blockbuster</h1>
+                    </div>
+                </div>
+            </div>
+          <div class="card text-white" style="border-radius: 1rem; background-color: #F2BED1;">
+            <div class="card-body p-5 text-center">
+  
+              <form class="mb-md-5 mt-md-4 pb-5" method="POST">
+                {% csrf_token %}
+  
+                <h2 class="fw-bold mb-4 text-uppercase">Register</h2>
+  
+                <div class="form-outline form-white mb-4">
+                    <label class="form-label" for="username">Username</label>
+                  <input type="text" name="username" required id="username" class="form-control form-control-lg" />
+                </div>
+  
+                <div class="form-outline form-white mb-4">
+                    <label class="form-label" for="password1">Password</label>
+                  <input type="password" name="password1" required id="password1" class="form-control form-control-lg" />
+                </div>
+  
+                <div class="form-outline form-white mb-4">
+                    <label class="form-label" for="password2">Password Confirmation</label>
+                  <input type="password" name="password2" required id="password2" class="form-control form-control-lg" />
+                </div>
+
+                <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
+  
+              </form>
+              {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                        <div class="alert alert-danger text-white" role="alert">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success text-white" role="alert">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+              {% endif %}
+              <div>
+                <p class="mb-0">Have an account already? <a href="{% url "main:login" %}" class="text-white-50 fw-bold">Login</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</section>
+```
+
+### 5. Mengkostumisasi *template* `form.html`
+Selanjutnya, saya mengkostumisasi *template* `form.html` pada berkas `main/templates/form.html`. Berikut kode yang saya tambahkan di *block* `content`:
+```
+    <section class="vh-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="container-fluid mt-5">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="text-center" style="color: #F2BED1;">Blockbuster</h1>
+                        </div>
+                    </div>
+                </div>
+              <div class="card text-white" style="border-radius: 1rem; background-color: #F2BED1;">
+                <div class="card-body p-5 text-center">
+      
+                  <form class="mb-md-5 mt-md-4 pb-5" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+      
+                    <h2 class="fw-bold mb-4 text-uppercase">Add Movie</h2>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="name">Name</label>
+                      <input type="text" name="name" required id="name" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="amount">Amount</label>
+                      <input type="number" name="amount" required id="amount" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="description">Description</label>
+                      <textarea name="description" required id="description" class="form-control form-control-lg" rows="4"></textarea>
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="price">Price</label>
+                      <input type="number" name="price" required id="price" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="year">Year</label>
+                      <input type="number" name="year" required id="year" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="genre">Genre</label>
+                      <input type="text" name="genre" required id="genre" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="duration">Duration</label>
+                      <input type="number" name="duration" required id="duration" class="form-control form-control-lg" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="rating">Rating</label>
+                      <input type="number" name="rating" required id="rating" class="form-control form-control-lg" step="0.1" />
+                    </div>
+      
+                    <div class="form-outline form-white mb-4">
+                        <label class="form-label" for="image">Image</label>
+                      <input type="file" name="image" accept="image/*" required id="image" class="form-control form-control-lg" />
+                    </div>
+
+                    <button class="btn btn-outline-light btn-lg px-5" type="submit">Add</button>
+      
+                  </form>
+                  {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  <div>
+                    <p class="mb-0">Don't have an account? <a href="{% url "main:register" %}" class="text-white-50 fw-bold">Sign Up</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+```
+Lalu, saya mengubah *form* pada berkas `main/forms.py` menjadi sebagai berikut:
+```
+from django.forms import ModelForm
+from main.models import Item
+
+class ItemForm(ModelForm):
+    class Meta:
+        model = Item
+        fields = ['name', 'amount', 'description', 'price', 'year', 'genre', 'duration', 'rating', 'image', 'user']
+```
+Dan saya mengubah *view* `create_item` pada berkas `main/views.py` menjadi sebagai berikut:
+```
+...
+@login_required(login_url='main:login')
+def create_item(request):
+    if request.method == 'POST':
+        data = request.POST.copy()
+        data['user'] = request.user.id
+        files = request.FILES.copy()
+        form = ItemForm(data, files)
+        print(form.errors)
+        if form.is_valid():
+            form.save()
+            return redirect('main:index')
+    return render(request, 'form.html')
+```
+
+### 6. Mengkostumisasi *template* `index.html`
+Selanjutnya, saya mengkostumisasi *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan di *block* `content`:
+```
+<section class="text-center">
+    <div class="container pt-5">
+        <h1 style="color: #F2BED1">Blockbuster</h1>
+        <h3>Movie Database</h3>
+        <p class="lead text-muted"> This is a simple movie database where you can add and delete for movies. </p>
+        <p>
+            {% if user.is_authenticated %}
+                <p class="lead text-muted">Username: {{ user.username }}<br/>
+                Last Login: {{ request.COOKIES.last_login }}</p>
+                <a href="{% url 'main:create' %}" class="btn btn-outline-dark my-2">Create Item</a>
+                <a href="{% url 'main:logout' %}" class="btn btn-outline-secondary my-2">Logout</a>
+            {% else %}
+                <a href="{% url 'main:register' %}" class="btn btn-outline-dark my-2">Register</a>
+                <a href="{% url 'main:login' %}" class="btn btn-outline-secondary my-2">Login</a>
+            {% endif %}
+        </p>
+    </div>
+</section>
+{% if user.is_authenticated %}
+    <section>
+        <div class="container">
+            {% if items %}
+                <p class="lead text-muted">Total Item: {{ items|length }}</p>
+            {% endif %}
+            <div class="row row-cols-3">
+                {% for item in items %}
+                <div class="col-md-6 col-lg-4 mb-5">
+                    <div class="card text-white" style="border-radius: 1rem; background-color: #F2BED1;">
+                        <img src="{{ item.image.url }}" class="card-img-top" alt="Image" style="border-radius: 1rem 1rem 0 0;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #B0578D">{{ item.name }}</h5>
+                            <p class="card-text">{{ item.description }}</p>
+                            <p class="card-text">Amount: {{ item.amount }}</p>
+                            <p class="card-text">Price: {{ item.price }}</p>
+                            <p class="card-text">Year: {{ item.year }}</p>
+                            <p class="card-text">Genre: {{ item.genre }}</p>
+                            <p class="card-text">Duration: {{ item.duration }}</p>
+                            <p class="card-text" style="color: #EBE76C;"><b>Rating: {{ item.rating }}</b></p>
+                            <a href="{% url 'main:add_amount' item.id %}" class="btn btn-outline-dark my-2">Add</a>
+                            <a href="{% url 'main:reduce_amount' item.id %}" class="btn btn-outline-secondary my-2">Reduce</a>
+                            <a href="{% url 'main:delete_item' item.id %}" class="btn btn-outline-danger my-2">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endif %}
+```
+Dengan ini, desain web menggunakan HTML, CSS dan Framework CSS telah selesai dibuat.
+
+
+## Menjawab Pertanyaan-Pertanyaan
+### Jelaskan manfaat dari setiap element selector dan kapan waktu yang tepat untuk menggunakannya.
+Element selector adalah salah satu jenis selector CSS yang digunakan untuk memilih elemen HTML tertentu. Element selector dapat digunakan untuk memilih elemen berdasarkan tag name, class, atau ID.
+
+Manfaat dari setiap element selector:
+- Type selector: Manfaat type selector adalah untuk memilih elemen berdasarkan tag name. Misalnya, untuk memilih semua elemen `<h1>`, kita dapat menggunakan selector `h1`.
+- Class selector: Manfaat class selector adalah untuk memilih elemen berdasarkan class. Misalnya, untuk memilih semua elemen dengan class `my-class`, kita dapat menggunakan selector `.my-class`.
+- ID selector: Manfaat ID selector adalah untuk memilih elemen berdasarkan ID. Misalnya, untuk memilih elemen dengan ID `my-id`, kita dapat menggunakan selector `#my-id`.
+
+Waktu yang tepat untuk menggunakan setiap element selector:
+- Type selector: Type selector adalah pilihan yang tepat untuk memilih elemen berdasarkan tag name. Misalnya, untuk menerapkan gaya yang sama pada semua elemen `<h1>`, kita dapat menggunakan type selector `h1`.
+- Class selector: Class selector adalah pilihan yang tepat untuk memilih elemen berdasarkan class. Misalnya, untuk menerapkan gaya yang sama pada semua elemen yang memiliki class `my-class`, kita dapat menggunakan class selector `.my-class`.
+- ID selector: ID selector adalah pilihan yang tepat untuk memilih elemen berdasarkan ID. Misalnya, untuk menerapkan gaya yang unik pada elemen dengan ID `my-id`, kita dapat menggunakan ID selector `#my-id`.
+
+### Jelaskan HTML5 Tag yang kamu ketahui.
+HTML5 Tag adalah tag yang digunakan untuk membuat struktur dan konten sebuah dokumen HTML. HTML5 Tag terdiri dari dua jenis, yaitu:
+- Structural Tags: Tag ini digunakan untuk menentukan struktur dari dokumen HTML. Misalnya, `<body>`, `<header>`, `<main>`, dan `<footer>`.
+- Content Tags: Tag ini digunakan untuk menentukan konten dari dokumen HTML. Misalnya, `<p>`, `<h1>`, `<img>`, dan `<video>`.
+Berikut adalah beberapa HTML5 Tag yang saya ketahui:
+
+1. Structural Tags:
+- `<html>`: Tag ini digunakan untuk mendefinisikan dokumen HTML.
+- `<head>`: Tag ini digunakan untuk menyimpan informasi tentang dokumen HTML, seperti judul, meta tag, dan stylesheet.
+- `<body>`: Tag ini digunakan untuk menyimpan konten utama dari dokumen HTML.
+- `<header>`: Tag ini digunakan untuk menyimpan bagian header dari dokumen HTML.
+- `<main>`: Tag ini digunakan untuk menyimpan bagian utama dari dokumen HTML.
+- `<footer>`: Tag ini digunakan untuk menyimpan bagian footer dari dokumen HTML.
+- `<nav>`: Tag ini digunakan untuk menyimpan bagian navigasi dari dokumen HTML.
+- `<section>`: Tag ini digunakan untuk menyimpan bagian dari dokumen HTML yang memiliki hubungan tematik.
+- `<article>`: Tag ini digunakan untuk menyimpan bagian dari dokumen HTML yang berisi konten independen.
+- `<aside>`: Tag ini digunakan untuk menyimpan bagian dari dokumen HTML yang berisi konten tambahan.
+
+2. Content Tags:
+- `<p>`: Tag ini digunakan untuk membuat paragraf.
+- `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`: Tag ini digunakan untuk membuat judul dengan ukuran teks yang berbeda-beda.
+- `<img>`: Tag ini digunakan untuk memasukkan gambar ke dalam dokumen HTML.
+- `<video>`: Tag ini digunakan untuk memasukkan video ke dalam dokumen HTML.
+- `<audio>`: Tag ini digunakan untuk memasukkan audio ke dalam dokumen HTML.
+- `<a>`: Tag ini digunakan untuk membuat tautan.
+- `<b>`: Tag ini digunakan untuk membuat teks tebal.
+- `<i>`: Tag ini digunakan untuk membuat teks miring.
+- `<u>`: Tag ini digunakan untuk membuat teks bergaris bawah.
+- `<strong>`: Tag ini digunakan untuk membuat teks dengan bobot yang lebih tinggi.
+- `<em>`: Tag ini digunakan untuk membuat teks dengan penekanan.
+- `<abbr>`: Tag ini digunakan untuk membuat singkatan.
+- `<blockquote>`: Tag ini digunakan untuk membuat kutipan.
+- `<code>`: Tag ini digunakan untuk membuat kode.
+- `<pre>`: Tag ini digunakan untuk membuat kode yang tidak akan diformat oleh browser.
+- `<ol>`: Tag ini digunakan untuk membuat daftar urut.
+- `<ul>`: Tag ini digunakan untuk membuat daftar tidak urut.
+- `<li>`: Tag ini digunakan untuk membuat item dalam daftar.
+- `<table>`: Tag ini digunakan untuk membuat tabel.
+- `<tr>`: Tag ini digunakan untuk membuat baris dalam tabel.
+- `<td>`: Tag ini digunakan untuk membuat sel dalam tabel.
+- `<th>`: Tag ini digunakan untuk membuat sel header dalam tabel.
+
+Selain tag-tag yang disebutkan di atas, masih banyak lagi HTML5 Tag yang bisa digunakan untuk membuat dokumen HTML yang lebih kompleks dan interaktif.
+
+### Jelaskan perbedaan antara margin dan padding.
+Margin dan padding adalah properti CSS yang digunakan untuk mengatur jarak antara elemen HTML dengan elemen HTML lainnya. Perbedaan antara margin dan padding adalah sebagai berikut:
+- Margin: Margin adalah jarak antara elemen HTML dengan elemen HTML lainnya. Margin memiliki empat sisi, yaitu top, right, bottom, dan left. Margin dapat diatur menggunakan properti CSS `margin`, `margin-top`, `margin-right`, `margin-bottom`, dan `margin-left`.
+- Padding: Padding adalah jarak antara elemen HTML dengan konten di dalamnya. Padding memiliki empat sisi, yaitu top, right, bottom, dan left. Padding dapat diatur menggunakan properti CSS `padding`, `padding-top`, `padding-right`, `padding-bottom`, dan `padding-left`.
+
+### Jelaskan perbedaan antara framework CSS Tailwind dan Bootstrap. Kapan sebaiknya kita menggunakan Bootstrap daripada Tailwind, dan sebaliknya?
+Tailwind CSS dan Bootstrap adalah dua framework CSS yang populer untuk membangun situs web dan aplikasi web. Keduanya menawarkan berbagai fitur dan keuntungan, tetapi juga memiliki beberapa perbedaan utama.
+
+Perbedaan antara Tailwind CSS dan Bootstrap:
+- Pendekatan: Tailwind CSS adalah framework CSS berbasis utilitas, sedangkan Bootstrap adalah framework CSS berbasis komponen.
+- Ukuran: Tailwind CSS memiliki ukuran file yang lebih kecil daripada Bootstrap.
+- Fleksibilitas: Tailwind CSS menawarkan lebih banyak fleksibilitas daripada Bootstrap.
+- Kesesuaian: Tailwind CSS lebih cocok untuk proyek-proyek yang membutuhkan kustomisasi yang lebih tinggi, sedangkan Bootstrap lebih cocok untuk proyek-proyek yang membutuhkan pembuatan situs web atau aplikasi web yang cepat.
+
+Kapan sebaiknya menggunakan Bootstrap daripada Tailwind:
+- Jika Anda membutuhkan situs web atau aplikasi web yang cepat dan mudah dibangun: Bootstrap adalah pilihan yang baik jika Anda membutuhkan situs web atau aplikasi web yang cepat dan mudah dibangun. Bootstrap menawarkan berbagai komponen siap pakai yang dapat Anda gunakan untuk membuat situs web atau aplikasi web yang lengkap.
+- Jika Anda membutuhkan situs web atau aplikasi web yang responsif: Bootstrap adalah pilihan yang baik jika Anda membutuhkan situs web atau aplikasi web yang responsif. Bootstrap menggunakan grid responsive yang dapat Anda gunakan untuk membuat situs web atau aplikasi web yang terlihat bagus di semua perangkat.
+
+Kapan sebaiknya menggunakan Tailwind daripada Bootstrap:
+- Jika Anda membutuhkan situs web atau aplikasi web yang unik dan kustom: Tailwind adalah pilihan yang baik jika Anda membutuhkan situs web atau aplikasi web yang unik dan kustom. Tailwind menawarkan lebih banyak fleksibilitas daripada Bootstrap, sehingga Anda dapat membuat situs web atau aplikasi web yang benar-benar sesuai dengan kebutuhan Anda.
+- Jika Anda membutuhkan situs web atau aplikasi web yang ringan: Tailwind adalah pilihan yang baik jika Anda membutuhkan situs web atau aplikasi web yang ringan. Tailwind memiliki ukuran file yang lebih kecil daripada Bootstrap, sehingga situs web atau aplikasi web Anda akan dimuat lebih cepat.
+
+Pada akhirnya, pilihan antara Tailwind dan Bootstrap tergantung pada kebutuhan dan preferensi Anda. Jika Anda membutuhkan situs web atau aplikasi web yang cepat dan mudah dibangun, Bootstrap adalah pilihan yang baik. Jika Anda membutuhkan situs web atau aplikasi web yang unik dan kustom, Tailwind adalah pilihan yang baik.

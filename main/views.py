@@ -28,15 +28,15 @@ def index(request):
 @login_required(login_url='main:login')
 def create_item(request):
     if request.method == 'POST':
-        form = ItemForm(request.POST, request.FILES)
+        data = request.POST.copy()
+        data['user'] = request.user.id
+        files = request.FILES.copy()
+        form = ItemForm(data, files)
+        print(form.errors)
         if form.is_valid():
-            item = form.save(commit=False)
-            item.user = request.user
-            item.save()
+            form.save()
             return redirect('main:index')
-    else:
-        form = ItemForm()
-    return render(request, 'form.html', {'form': form})
+    return render(request, 'form.html')
 
 def show_xml(request):
     items = Item.objects.all()
