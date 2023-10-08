@@ -1,5 +1,6 @@
 
 # Blockbuster
+[![image](https://i.postimg.cc/NGTyLfmt/blockbuster.png)](https://i.postimg.cc/NGTyLfmt/blockbuster.png)
 Blockbuster merupakan aplikasi yang digunakan untuk memanajemen data film. Aplikasi ini dibuat menggunakan bahasa pemrograman Python dan menggunakan framework Django. Aplikasi ini dibuat untuk memenuhi tugas besar mata kuliah Pemrograman Berbasis Platform yang diselenggarakan oleh Fakultas Ilmu Komputer, Universitas Indonesia.
 
 Website dapat diakses melalui 
