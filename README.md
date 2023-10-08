@@ -2,6 +2,10 @@
 # Blockbuster
 Blockbuster merupakan aplikasi yang digunakan untuk memanajemen data film. Aplikasi ini dibuat menggunakan bahasa pemrograman Python dan menggunakan framework Django. Aplikasi ini dibuat untuk memenuhi tugas besar mata kuliah Pemrograman Berbasis Platform yang diselenggarakan oleh Fakultas Ilmu Komputer, Universitas Indonesia.
 
+Website dapat diakses melalui 
+- [https://jessica-ruth-tugas.pbp.cs.ui.ac.id/](https://jessica-ruth-tugas.pbp.cs.ui.ac.id/)
+- [https://jess-blockbuster.adaptable.app/](https://jess-blockbuster.adaptable.app/) (backup)
+
 ## Author
 - Nama: Jessica Ruth Damai Yanti Manurung
 - NPM: 2206082783
@@ -1601,3 +1605,183 @@ Dan berikut kode yang saya ubah pada *block* `content`:
 ```
 '<button type="button" class="btn btn-outline-danger mx-2" onclick="deleteItem(' + item.pk + ')">Delete</button>'
 ```
+
+### Melakukan perintah `collectstatic`
+Sebelumnya saya mengatur `STATIC_ROOT` pada berkas `blockbuster/settings.py` menjadi sebagai berikut:
+```
+STATIC_ROOT = BASE_DIR / "static"
+```
+Lalu, saya melakukan perintah `collectstatic` pada terminal:
+```
+python manage.py collectstatic
+```
+
+### Melakukan *deployment* ke PaaS PBP Fasilkom UI
+1. Pertama, saya menambahkan `django-environ` pada berkas `requirements.txt`.
+2. Selanjutnya, saya membuat berkas `Procfile` pada direktori utama. Berikut kode yang saya tambahkan:
+```
+release: django-admin migrate --noinput
+web: gunicorn blockbuster.wsgi
+```
+3. Lalu, saya membuat berkas `pbp-deploy.yml` pada direktori baru bernama `.github/workflows`. Berikut kode yang saya tambahkan:
+```
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  Deployment:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Cloning repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Push to Dokku server
+      uses: dokku/github-action@master
+      with:
+        branch: 'main'
+        git_remote_url: ssh://dokku@${{ secrets.DOKKU_SERVER_IP }}/${{ secrets.DOKKU_APP_NAME }}
+        ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+```
+4. Selanjutnya, saya membuat berkas `.dockerignore` pada direktori utama. Berikut kode yang saya tambahkan:
+```
+**/*.pyc
+**/*.pyo
+**/*.mo
+**/*.db
+**/*.css.map
+**/*.egg-info
+**/*.sql.gz
+**/__pycache__/
+.cache
+.project
+.idea
+.pydevproject
+.idea/workspace.xml
+.DS_Store
+.git/
+.sass-cache
+.vagrant/
+dist
+docs
+env
+logs
+src/{{ project_name }}/settings/local.py
+src/node_modules
+web/media
+web/static/CACHE
+stats
+Dockerfile
+.gitignore
+Dockerfile
+db.sqlite3
+**/*.md
+logs/
+```
+5. Lalu, saya membuat berkas `Dockerfile` pada direktori utama. Berikut kode yang saya tambahkan:
+```
+FROM python:3.10-slim-buster
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    DJANGO_SETTINGS_MODULE=blockbuster.settings \
+    PORT=8000 \
+    WEB_CONCURRENCY=2
+
+# Install system packages required Django.
+RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
+&& rm -rf /var/lib/apt/lists/*
+
+RUN addgroup --system django \
+    && adduser --system --ingroup django django
+
+# Requirements are installed here to ensure they will be cached.
+COPY ./requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
+
+# Copy project code
+COPY . .
+
+RUN python manage.py collectstatic --noinput --clear
+
+# Run as non-root user
+RUN chown -R django:django /app
+USER django
+
+# Run application
+# CMD gunicorn blockbuster.wsgi:application
+```
+6. Selanjutnya, saya membuka berkas `settings.py` pada direktori `blockbuster`. Berikut kode yang saya tambahkan:
+```
+...
+import environ
+import os
+... (setelah BASE_DIR)
+env = environ.Env()
+... (setelah SECRET_KEY)
+# Automatically determine environment by detecting if DATABASE_URL variable.
+# DATABASE_URL is provided by Heroku if a database add-on is added (e.g. Heroku Postgres).
+PRODUCTION = env.bool('PRODUCTION', False)
+... (setelah DATABASES)
+# Set database settings automatically using DATABASE_URL.
+if PRODUCTION:
+    DATABASES = {
+        'default': env.db('DATABASE_URL')
+    }
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True
+...
+```
+7. Lalu, saya mengonfigurasi *environment variables* pada Github Actions. Berikut *environment variables* yang saya tambahkan:
+```
+DOKKU_APP_NAME: jessica-ruth-tugas
+DOKKU_SERVER_IP: pbp.cs.ui.ac.id
+DOKKU_SSH_PRIVATE_KEY: (private key)
+```
+8. Selanjutnya, saya melakukan *push* ke Github dan melakukan *deployment* ke PaaS PBP Fasilkom UI.
+
+
+## Menjawab Pertanyaan-Pertanyaan
+### Jelaskan perbedaan antara asynchronous programming dengan synchronous programming.
+Perbedaan utama antara asynchronous programming dan synchronous programming adalah cara mereka menangani operasi yang memakan waktu.
+
+Asynchronous programming memungkinkan program untuk melanjutkan eksekusi setelah memulai operasi yang memakan waktu, tanpa menunggu operasi tersebut selesai. Ini dilakukan dengan menggunakan callback, yang adalah fungsi yang dipanggil ketika operasi selesai.
+
+Synchronous programming, di sisi lain, mengharuskan program untuk menunggu operasi yang memakan waktu selesai sebelum melanjutkan eksekusi. Ini dapat menyebabkan program terhenti atau melambat jika operasi memakan waktu lama.
+
+### Dalam penerapan JavaScript dan AJAX, terdapat penerapan paradigma event-driven programming. Jelaskan maksud dari paradigma tersebut dan sebutkan salah satu contoh penerapannya pada tugas ini.
+Paradigma event-driven programming adalah paradigma pemrograman yang memisahkan antara logika aplikasi dan peristiwa yang terjadi di aplikasi. Dalam paradigma ini, logika aplikasi hanya akan dijalankan ketika terjadi peristiwa tertentu.
+
+Dalam penerapan JavaScript dan AJAX, paradigma event-driven programming digunakan untuk merespons peristiwa yang terjadi di browser, seperti klik, scroll, dan perubahan data. Dengan menggunakan paradigma ini, aplikasi dapat merespons peristiwa secara real-time tanpa harus memuat ulang halaman.
+
+Salah satu contoh penerapan paradigma event-driven programming dalam JavaScript dan AJAX pada tugas ini adalah ketika menambahkan data menggunakan AJAX. Ketika tombol `Create` ditekan, fungsi `createItem()` akan dijalankan. Fungsi ini akan mengirimkan data ke server menggunakan AJAX, dan kemudian memuat ulang data menggunakan fungsi `refreshItems()`.
+
+### Jelaskan penerapan asynchronous programming pada AJAX.
+AJAX adalah singkatan dari Asynchronous JavaScript and XML. AJAX adalah teknik yang memungkinkan aplikasi web untuk berkomunikasi dengan server secara asynchronous.
+
+Penerapan asynchronous programming pada AJAX dapat meningkatkan performa dan responsivitas aplikasi web. Dengan menggunakan asynchronous programming, aplikasi web dapat melanjutkan eksekusi setelah memulai operasi yang memakan waktu, tanpa menunggu operasi tersebut selesai. Ini berarti bahwa pengguna dapat berinteraksi dengan aplikasi web saat operasi yang memakan waktu sedang berlangsung.
+
+### Pada PBP kali ini, penerapan AJAX dilakukan dengan menggunakan Fetch API daripada library jQuery. Bandingkanlah kedua teknologi tersebut dan tuliskan pendapat kamu teknologi manakah yang lebih baik untuk digunakan.
+Fetch API dan jQuery adalah dua teknologi yang dapat digunakan untuk menerapkan AJAX. Keduanya memiliki kelebihan dan kekurangan masing-masing.
+
+**Fetch API** adalah API JavaScript native yang dapat digunakan untuk membuat permintaan HTTP. Fetch API memiliki beberapa kelebihan, antara lain:
+* **Kemudahan penggunaan:** Fetch API lebih mudah digunakan daripada XMLHttpRequest, yang merupakan API JavaScript lama untuk membuat permintaan HTTP.
+* **Dukungan Promise:** Fetch API mendukung Promise, yang membuat kode lebih mudah dibaca dan dirawat.
+* **Kompatibilitas browser:** Fetch API lebih kompatibel dengan browser modern.
+
+**jQuery** adalah library JavaScript yang menyediakan berbagai fungsi untuk mempermudah pengembangan web. jQuery dapat digunakan untuk menerapkan AJAX, tetapi juga dapat digunakan untuk tugas-tugas lain, seperti manipulasi DOM dan event handling.
+jQuery memiliki beberapa kelebihan, antara lain:
+* **Kemudahan dipelajari dan digunakan:** jQuery lebih mudah dipelajari dan digunakan daripada Fetch API.
+* **Komunitas:** jQuery memiliki komunitas yang besar dan aktif, sehingga ada banyak sumber daya yang tersedia untuk mempelajarinya dan mendapatkan bantuan.
+* **Kompatibilitas browser:** jQuery mendukung berbagai browser, termasuk browser lama.
+
+**Teknologi manakah yang lebih baik untuk digunakan?**
+Teknologi mana yang lebih baik untuk digunakan menurut saya tergantung pada kebutuhan proyek. Jika membutuhkan API yang mudah digunakan dan mendukung Promise, maka Fetch API adalah pilihan yang baik. Jika membutuhkan API yang didukung oleh komunitas yang besar dan memiliki banyak sumber daya, maka jQuery adalah pilihan yang baik. Oleh karena itu, Fetch API dan jQuery adalah teknologi yang baik untuk digunakan, tergantung pada kebutuhan proyek.
