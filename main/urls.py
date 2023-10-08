@@ -16,4 +16,7 @@ urlpatterns = [
     path('item/add/<int:id>/', views.add_amount, name='add_amount'),
     path('item/reduce/<int:id>/', views.reduce_amount, name='reduce_amount'),
     path('item/delete/<int:id>/', views.delete_item, name='delete_item'),
+    path('get-item-json/', views.get_item_json, name='get_item_json'),
+    path('create-ajax/', views.create_ajax, name='create_ajax'),
+    path('delete-ajax/<int:id>/', views.delete_ajax, name='delete_ajax'),
 ]

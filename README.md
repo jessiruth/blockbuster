@@ -1355,3 +1355,249 @@ Kapan sebaiknya menggunakan Tailwind daripada Bootstrap:
 - Jika Anda membutuhkan situs web atau aplikasi web yang ringan: Tailwind adalah pilihan yang baik jika Anda membutuhkan situs web atau aplikasi web yang ringan. Tailwind memiliki ukuran file yang lebih kecil daripada Bootstrap, sehingga situs web atau aplikasi web Anda akan dimuat lebih cepat.
 
 Pada akhirnya, pilihan antara Tailwind dan Bootstrap tergantung pada kebutuhan dan preferensi Anda. Jika Anda membutuhkan situs web atau aplikasi web yang cepat dan mudah dibangun, Bootstrap adalah pilihan yang baik. Jika Anda membutuhkan situs web atau aplikasi web yang unik dan kustom, Tailwind adalah pilihan yang baik.
+
+
+# Tugas 6: JavaScript dan Asynchronous JavaScript
+
+## *Step-by-step* JavaScript dan Asynchronous JavaScript
+
+### 1. Membuat fungsi untuk mengembalikan data JSON
+Pertama, saya membuat fungsi untuk mengembalikan data JSON pada berkas `main/views.py`. Berikut kode yang saya tambahkan:
+```
+...
+@login_required(login_url='main:login')
+def get_item_json(request):
+    items = Item.objects.filter(user=request.user)
+    data = serializers.serialize('json', items)
+    return HttpResponse(data)
+```
+
+### 2. Membuat fungsi untuk menambahkan data
+Selanjutnya, saya membuat fungsi untuk menambahkan data pada berkas `main/views.py`. Berikut kode yang saya tambahkan:
+```
+...
+from django.views.decorators.csrf import csrf_exempt
+...
+@login_required(login_url='main:login')
+@csrf_exempt
+def create_ajax(request):
+    if request.method == 'POST':
+        new_item = Item(
+            name=request.POST.get('name'),
+            amount=request.POST.get('amount'),
+            description=request.POST.get('description'),
+            price=request.POST.get('price'),
+            year=request.POST.get('year'),
+            genre=request.POST.get('genre'),
+            duration=request.POST.get('duration'),
+            rating=request.POST.get('rating'),
+            image=request.FILES.get('image'),
+            user=request.user
+        )
+        new_item.save()
+
+        return HttpResponse('Item added', status=201)
+    return HttpResponseNotFound()
+```
+
+### 3. Membuat fungsi untuk menghapus data
+Selanjutnya, saya membuat fungsi untuk menghapus data pada berkas `main/views.py`. Berikut kode yang saya tambahkan:
+```
+...
+@login_required(login_url='main:login')
+@csrf_exempt
+def delete_ajax(request, id):
+    if request.method == 'DELETE':
+        item = Item.objects.get(id=id)
+        if item.user == request.user:
+            item.delete()
+            return HttpResponse('Item deleted', status=204)
+
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+```
+
+### 4. Menambahkan *routing* untuk fungsi yang telah dibuat
+Selanjutnya, saya menambahkan *routing* untuk fungsi yang telah dibuat pada berkas `main/urls.py`. Berikut kode yang saya tambahkan:
+```
+...
+urlpatterns = [
+    ...
+    path('get-item-json/', views.get_item_json, name='get_item_json'),
+    path('create-ajax/', views.create_ajax, name='create_ajax'),
+    path('delete-ajax/<int:id>/', views.delete_ajax, name='delete_ajax'),
+]
+```
+
+### 5. Menampilkan data JSON menggunakan AJAX
+Sebelum itu, saya mengubah berkas *template* `base.html` pada berkas `templates/base.html`. Berikut kode yang saya ubah di bawah *block* `content`:
+```
+...
+{% block script %}
+{% endblock script %}
+```
+Selanjutnya, saya menampilkan data JSON menggunakan AJAX pada berkas *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya ubah pada *block* `content`:
+```
+...
+{% if user.is_authenticated %}
+    <section id="items"></section>
+{% endif %}
+```
+Dan berikut kode yang saya tambahkan pada *block* `script`:
+```
+    {% if user.is_authenticated %}
+    <script>
+        async function getItems() {
+            return fetch("{% url 'main:get_item_json' %}")
+                .then(response => response.json())
+        }
+
+        async function refreshItems() {
+            document.getElementById("items").innerHTML = ""
+            const items = await getItems()
+            const length = Object.keys(items).length
+            let html = '<div class="container">'
+            html += '<p class="lead text-muted">Total Item: ' + length + '</p>'
+            html += '<div class="row row-cols-3">';
+            items.forEach((item) => {
+                html += '<div class="col-md-6 col-lg-4 mb-5">'
+                html += '<div class="card text-white" style="border-radius: 1rem; background-color: #F2BED1;">'
+                html += '<img src="/media/' + item.fields.image + '" class="card-img-top" alt="Image" style="border-radius: 1rem 1rem 0 0;">'
+                html += '<div class="card-body">'
+                html += '<h5 class="card-title" style="color: #B0578D">' + item.fields.name + '</h5>'
+                html += '<p class="card-text">' + item.fields.description + '</p>'
+                html += '<p class="card-text">Amount: ' + item.fields.amount + '</p>'
+                html += '<p class="card-text">Price: ' + item.fields.price + '</p>'
+                html += '<p class="card-text">Year: ' + item.fields.year + '</p>'
+                html += '<p class="card-text">Genre: ' + item.fields.genre + '</p>'
+                html += '<p class="card-text">Duration: ' + item.fields.duration + '</p>'
+                html += '<p class="card-text" style="color: #EBE76C;"><b>Rating: ' + item.fields.rating + '</b></p>'
+                html += '<a href="/item/add/' + item.pk + '" class="btn btn-outline-dark mx-2">Add</a>'
+                html += '<a href="/item/reduce/' + item.pk + '" class="btn btn-outline-secondary mx-2">Reduce</a>'
+                html += '<a href="/item/delete/' + item.pk + '" class="btn btn-outline-danger mx-2">Delete</a>'
+                html += '</div>'
+                html += '</div>'
+                html += '</div>'
+            })
+            html += '</div>'
+            html += '</div>'
+            document.getElementById("items").innerHTML = html
+        }
+
+        refreshItems();
+        </script>
+    {% endif %}
+```
+
+### 6. Menambahkan fungsi untuk menambahkan data menggunakan AJAX
+Selanjutnya, saya membuat modal untuk menambahkan data menggunakan AJAX pada berkas *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan di bawah *section* `items`:
+```
+    <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modalItem" style="position: fixed; bottom: 2rem; right: 2rem; border-radius: 1rem;">Add Movie</button>
+
+    <div class="modal modal-lg fade" id="modalItem" tabindex="-1" aria-labelledby="modalItemLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-center text-white" style="border-radius: 1rem; background-color: #F2BED1;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalItemLabel" style="color: #B0578D;">Add Movie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: #B0578D;"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createItemForm" onsubmit="return false;">
+                        {% csrf_token %}
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="name">Name</label>
+                        <input type="text" name="name" required id="name" class="form-control form-control-lg" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="amount">Amount</label>
+                        <input type="number" name="amount" required id="amount" class="form-control form-control-lg" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="description">Description</label>
+                        <textarea name="description" required id="description" class="form-control form-control-lg" rows="4"></textarea>
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="price">Price</label>
+                        <input type="number" name="price" required id="price" class="form-control form-control-lg" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="year">Year</label>
+                        <input type="number" name="year" required id="year" class="form-control form-control-lg" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="genre">Genre</label>
+                        <input type="text" name="genre" required id="genre" class="form-control form-control-lg" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="duration">Duration</label>
+                        <input type="number" name="duration" required id="duration" class="form-control form-control-lg" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="rating">Rating</label>
+                        <input type="number" name="rating" required id="rating" class="form-control form-control-lg" step="0.1" />
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="image">Image</label>
+                        <input type="file" name="image" accept="image/*" required id="image" class="form-control form-control-lg" />
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-dark" id="createItem" data-bs-dismiss="modal">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+```
+Dan berikut kode yang saya tambahkan pada *block* `script`:
+```
+...
+function createItem() {
+    fetch("{% url 'main:create_ajax' %}", {
+        method: "POST",
+        body: new FormData(document.getElementById("createItemForm"))
+    }).then(() => {
+        refreshItems()
+    })
+
+    document.getElementById("createItemForm").reset()
+    return false
+}
+
+document.getElementById("createItem").onclick = createItem
+```
+
+### 7. Menambahkan fungsi untuk menghapus data menggunakan AJAX
+Selanjutnya, saya menambahkan fungsi untuk menghapus data menggunakan AJAX pada berkas *template* `index.html` pada berkas `main/templates/index.html`. Berikut kode yang saya tambahkan pada *block* `script`:
+```
+function deleteItem(id) {
+    fetch("{% url 'main:delete_ajax' 0 %}".replace("0", id), {
+        method: "DELETE",
+        body: new FormData()
+    }).then(() => {
+        refreshItems()
+    })
+
+    return false
+}
+```
+Dan berikut kode yang saya ubah pada *block* `content`:
+> Sebelum diubah:
+```
+<a href="/item/delete/{{ item.pk }}" class="btn btn-outline-danger mx-2">Delete</a>
+```
+> Setelah diubah:
+```
+'<button type="button" class="btn btn-outline-danger mx-2" onclick="deleteItem(' + item.pk + ')">Delete</button>'
+```

@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from .models import Item
 from .forms import ItemForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 
 
@@ -117,3 +118,42 @@ def delete_item(request, id):
     if request.user == item.user:
         item.delete()
     return redirect('main:index')
+
+@login_required(login_url='main:login')
+def get_item_json(request):
+    items = Item.objects.filter(user=request.user)
+    data = serializers.serialize('json', items)
+    return HttpResponse(data)
+
+@login_required(login_url='main:login')
+@csrf_exempt
+def create_ajax(request):
+    if request.method == 'POST':
+        new_item = Item(
+            name=request.POST.get('name'),
+            amount=request.POST.get('amount'),
+            description=request.POST.get('description'),
+            price=request.POST.get('price'),
+            year=request.POST.get('year'),
+            genre=request.POST.get('genre'),
+            duration=request.POST.get('duration'),
+            rating=request.POST.get('rating'),
+            image=request.FILES.get('image'),
+            user=request.user
+        )
+        new_item.save()
+
+        return HttpResponse('Item added', status=201)
+    return HttpResponseNotFound()
+
+@login_required(login_url='main:login')
+@csrf_exempt
+def delete_ajax(request, id):
+    if request.method == 'DELETE':
+        item = Item.objects.get(id=id)
+        if item.user == request.user:
+            item.delete()
+            return HttpResponse('Item deleted', status=204)
+
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
