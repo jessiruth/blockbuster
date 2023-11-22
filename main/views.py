@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Item
 from .forms import ItemForm
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
@@ -156,4 +156,25 @@ def delete_ajax(request, id):
             return HttpResponse('Item deleted', status=204)
 
         return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+@login_required(login_url='main:login')
+@csrf_exempt
+def create_flutter(request):
+    if request.method == 'POST':
+        new_item = Item(
+            name=request.POST.get('name'),
+            amount=request.POST.get('amount'),
+            description=request.POST.get('description'),
+            price=request.POST.get('price'),
+            year=request.POST.get('year'),
+            genre=request.POST.get('genre'),
+            duration=request.POST.get('duration'),
+            rating=request.POST.get('rating'),
+            image=request.FILES.get('image'),
+            user=request.user
+        )
+        new_item.save()
+
+        return JsonResponse({'status': True}, status=201)
     return HttpResponseNotFound()

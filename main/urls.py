@@ -19,4 +19,5 @@ urlpatterns = [
     path('get-item-json/', views.get_item_json, name='get_item_json'),
     path('create-ajax/', views.create_ajax, name='create_ajax'),
     path('delete-ajax/<int:id>/', views.delete_ajax, name='delete_ajax'),
+    path('create-flutter/', views.create_flutter, name='create_flutter'),
 ]
